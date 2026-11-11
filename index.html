@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paul Madathiparampil Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: a filing-ledger page. Narrow reading column, task "filings" stacked
+   like EDGAR entries, monospace for every figure that came from a source document. */
+:root {
+  --paper: #f5f6f4;
+  --sheet: #ffffff;
+  --ink: #16212b;
+  --muted: #5a6670;
+  --rule: #d5dbde;
+  --accent: #0d5a86;
+  --accent-soft: #e3eef5;
+  --fail: #9a3b12;
+  --fail-soft: #f8e9e0;
+  --pass: #276245;
+  --pass-soft: #e2f0e7;
+  --wip: #6b5a10;
+  --wip-soft: #f3eed6;
+  --display: "Newsreader", Georgia, "Times New Roman", serif;
+  --body: "IBM Plex Sans", "Segoe UI", Helvetica, Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #10161b; --sheet: #172028; --ink: #e4e9ec; --muted: #9aa7b0;
+    --rule: #2c3842; --accent: #6fb3dd; --accent-soft: #19303f;
+    --fail: #f0a07a; --fail-soft: #3a2219; --pass: #8fd0aa; --pass-soft: #1b3326;
+    --wip: #e2cf7a; --wip-soft: #33301a; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #10161b; --sheet: #172028; --ink: #e4e9ec; --muted: #9aa7b0;
+  --rule: #2c3842; --accent: #6fb3dd; --accent-soft: #19303f;
+  --fail: #f0a07a; --fail-soft: #3a2219; --pass: #8fd0aa; --pass-soft: #1b3326;
+  --wip: #e2cf7a; --wip-soft: #33301a; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font-family: var(--body); font-size: 16px; line-height: 1.6;
+}
+a { color: var(--accent); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+.wrap { max-width: 980px; margin: 0 auto; padding: 0 20px; }
+.read { max-width: 68ch; }
+h1, h2, h3 { font-family: var(--display); font-weight: 600; text-wrap: balance; line-height: 1.2; margin: 0; }
+h1 { font-size: clamp(2rem, 4.5vw, 2.8rem); }
+h2 { font-size: 1.75rem; }
+h3 { font-size: 1.3rem; }
+p { margin: 0; }
+code, .mono { font-family: var(--mono); font-size: 0.88em; }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+/* Header */
+header.top { border-bottom: 1px solid var(--rule); background: var(--sheet); }
+.top .wrap { padding-top: 48px; padding-bottom: 36px; display: grid; gap: 18px; }
+.eyebrow { font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.lede { font-size: 1.12rem; color: var(--ink); }
+.links { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn {
+  display: inline-block; padding: 8px 14px; border: 1px solid var(--rule); border-radius: 4px;
+  text-decoration: none; color: var(--ink); background: var(--paper); font-size: 0.92rem; font-weight: 500;
+}
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--sheet); }
+.btn:hover { border-color: var(--accent); }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 0; border: 1px solid var(--rule); border-radius: 4px; background: var(--paper); }
+.facts div { padding: 12px 14px; border-right: 1px solid var(--rule); }
+.facts div:last-child { border-right: 0; }
+.facts b { display: block; font-family: var(--mono); font-size: 1.25rem; font-weight: 500; }
+.facts span { font-size: 0.82rem; color: var(--muted); }
+
+.scope { border-left: 3px solid var(--accent); padding: 4px 0 4px 14px; display: grid; gap: 4px; }
+.scope-main { font-family: var(--display); font-size: 1.25rem; font-weight: 600; }
+.scope-sub { font-family: var(--mono); font-size: 0.8rem; color: var(--muted); }
+
+/* Sections */
+section { padding: 48px 0 8px; }
+.sec-head { display: grid; gap: 8px; margin-bottom: 22px; }
+.sec-head p { color: var(--muted); }
+
+.method { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; }
+.method div { background: var(--sheet); border: 1px solid var(--rule); border-radius: 4px; padding: 16px; display: grid; gap: 6px; align-content: start; }
+.method .step { font-family: var(--mono); font-size: 0.78rem; color: var(--accent); }
+.method h3 { font-size: 1.08rem; font-family: var(--body); font-weight: 600; }
+.method p { font-size: 0.92rem; color: var(--muted); }
+
+/* Task index */
+.index { width: 100%; border-collapse: collapse; font-size: 0.92rem; background: var(--sheet); }
+.index th, .index td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+.index th { font-family: var(--mono); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 500; }
+.scroll { overflow-x: auto; border: 1px solid var(--rule); border-radius: 4px; }
+
+/* Task cards */
+.task { background: var(--sheet); border: 1px solid var(--rule); border-left: 4px solid var(--accent); border-radius: 4px; padding: 22px 22px 18px; display: grid; gap: 14px; margin-bottom: 22px; scroll-margin-top: 16px; }
+.task-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; align-items: baseline; }
+.task-id { font-family: var(--mono); font-size: 0.8rem; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-family: var(--mono); font-size: 0.74rem; padding: 2px 8px; border-radius: 3px; background: var(--accent-soft); color: var(--accent); }
+.pill { font-family: var(--mono); font-size: 0.74rem; font-weight: 500; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
+.pill.fail { background: var(--fail-soft); color: var(--fail); }
+.pill.pass { background: var(--pass-soft); color: var(--pass); }
+.pill.wip { background: var(--wip-soft); color: var(--wip); }
+.task .summary { max-width: 70ch; }
+.hard { display: grid; gap: 6px; }
+.hard h4, details h4 { margin: 0; font-size: 0.78rem; font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 500; }
+.hard ul, details ul, details ol { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+.answers { display: flex; flex-wrap: wrap; gap: 10px; }
+.answer { border: 1px solid var(--rule); border-radius: 4px; padding: 8px 12px; min-width: 150px; }
+.answer span { display: block; font-size: 0.76rem; color: var(--muted); }
+.answer b { font-family: var(--mono); font-weight: 500; font-size: 1.05rem; }
+.answer.miss { border-color: var(--fail); }
+.answer .model { font-size: 0.76rem; color: var(--fail); font-family: var(--mono); }
+.answer .model.ok { color: var(--pass); }
+
+details { border-top: 1px solid var(--rule); padding-top: 10px; }
+summary { cursor: pointer; font-weight: 600; font-size: 0.95rem; color: var(--accent); list-style: none; }
+summary::-webkit-details-marker { display: none; }
+summary::before { content: "+ "; font-family: var(--mono); }
+details[open] > summary::before { content: "\2212 "; }
+.detail-body { display: grid; gap: 14px; padding-top: 12px; font-size: 0.94rem; }
+.prompt { background: var(--paper); border: 1px solid var(--rule); border-radius: 4px; padding: 14px 16px; font-size: 0.92rem; max-width: 75ch; }
+.chain li { padding-left: 2px; }
+.chain .kind { font-family: var(--mono); font-size: 0.74rem; color: var(--accent); margin-right: 6px; }
+table.rubric { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+.rubric th, .rubric td { padding: 6px 10px; border-bottom: 1px solid var(--rule); text-align: left; vertical-align: top; }
+.rubric th { font-family: var(--mono); font-size: 0.72rem; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+.rubric td.num, .rubric th.num { text-align: right; }
+.rubric tr.final td { font-weight: 600; }
+.graph { font-family: var(--mono); font-size: 0.8rem; background: var(--paper); border: 1px solid var(--rule); border-radius: 4px; padding: 12px 14px; overflow-x: auto; white-space: pre; line-height: 1.55; }
+
+/* Toolkit */
+.tools { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+.tool { background: var(--sheet); border: 1px solid var(--rule); border-radius: 4px; padding: 16px; display: grid; gap: 8px; align-content: start; }
+.tool h3 { font-family: var(--mono); font-size: 0.95rem; font-weight: 500; }
+.tool p { font-size: 0.9rem; }
+.tool .decision { font-size: 0.86rem; color: var(--muted); border-left: 2px solid var(--accent); padding-left: 10px; }
+.tool .used { font-size: 0.78rem; font-family: var(--mono); color: var(--muted); }
+
+.skills { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+.skills div { display: grid; gap: 4px; }
+.skills h3 { font-family: var(--body); font-size: 0.95rem; font-weight: 600; }
+.skills p { font-size: 0.9rem; color: var(--muted); }
+
+footer { margin-top: 56px; border-top: 1px solid var(--rule); background: var(--sheet); }
+footer .wrap { padding-top: 28px; padding-bottom: 36px; display: grid; gap: 10px; }
+.note { font-size: 0.84rem; color: var(--muted); }
+
+@media (max-width: 520px) {
+  .task { padding: 16px 14px; }
+  .facts div { border-right: 0; border-bottom: 1px solid var(--rule); }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+html { scroll-behavior: smooth; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <p class="eyebrow">AI Data Analyst · LLM evaluation · Reasoning and analytics benchmarks</p>
+    <h1>Paul Madathiparampil</h1>
+    <p class="lede read">I design multi-hop reasoning tasks that frontier models get wrong, and the parsers, golden trajectories and rubrics that prove what the right answer is. My tasks are built from primary sources: SEC EDGAR filings (13F-HR, 10-K, 10-Q, X-17A-5, N-PX) and FRED economic series.</p>
+    <div class="links">
+      <a class="btn primary" href="https://github.com/pmadathiparampil/reasoning-benchmark">Code on GitHub</a>
+      <a class="btn" href="Paul_Madathiparampil_Resume.pdf">Resume (PDF)</a>
+      <a class="btn" href="https://www.linkedin.com/in/paul-m-48a9b1269/">LinkedIn</a>
+      <a class="btn" href="#contact">Contact</a>
+    </div>
+    <div class="scope">
+      <p class="scope-main">Reasoning and analytics tasks used in evaluations for frontier AI labs</p>
+      <p class="scope-sub">Multi-hop retrieval · Multi-step calculation · Entity resolution · Legacy-format parsing · Rubric design</p>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<section id="method">
+  <div class="sec-head">
+    <h2>How I build a task</h2>
+    <p class="read">Every task ships with four artifacts: the prompt, a step-by-step reasoning chain, a reasoning graph of retrieval and compute nodes, and a weighted rubric.</p>
+  </div>
+  <div class="method">
+    <div><span class="step">01 · Source</span><h3>Pick a hard primary source</h3><p>Old fixed-width filings, multi-row holdings, split vote records, affiliated registrants. Places where a model has to read the document, not recall a number.</p></div>
+    <div><span class="step">02 · Chain</span><h3>Force multiple hops</h3><p>Each answer depends on an earlier retrieval: a filing date feeds a FRED lookup, a computed digit picks a row, an entity has to be resolved across a merger.</p></div>
+    <div><span class="step">03 · Verify</span><h3>Parse it myself</h3><p>I write a parser for each source format and reconcile row sums against the filing's own totals before an answer goes in the key.</p></div>
+    <div><span class="step">04 · Grade</span><h3>Weight the rubric</h3><p>Final answers carry 50 points, split evenly. Intermediate steps share the other 50, so a lucky final number without the right inputs still loses credit.</p></div>
+  </div>
+</section>
+
+<section id="tasks">
+  <div class="sec-head">
+    <h2>Benchmark tasks</h2>
+    <p class="read">Selected examples. Each card shows what the task tests and, where reviewed, how a frontier model did. Open a card for the full prompt, reasoning chain and rubric.</p>
+  </div>
+
+  <div class="scroll">
+  <table class="index">
+    <thead><tr><th>#</th><th>Task</th><th>Sources</th><th>Hops</th></tr></thead>
+    <tbody>
+      <tr><td class="num">01</td><td><a href="#t1">BlackRock 13F-HR: 3M position, Q2 vs Q3 2025</a></td><td>13F-HR, FRED SP500</td><td class="num">5</td></tr>
+      <tr><td class="num">02</td><td><a href="#t2">AMD derived Q4 free cash flow</a></td><td>10-Q, 10-K, FRED DGS10</td><td class="num">12</td></tr>
+      <tr><td class="num">03</td><td><a href="#t3">State Street and Chase Manhattan cross-holdings, 1999</a></td><td>Plain-text 13F-HR ×3, filer records</td><td class="num">12</td></tr>
+      <tr><td class="num">04</td><td><a href="#t4">Citadel Securities FOCUS report and Citadel Advisors 13F</a></td><td>X-17A-5, 13F-HR, 13G/A</td><td class="num">12</td></tr>
+      <tr><td class="num">05</td><td><a href="#t5">JPMorgan Chase's earliest plain-text 13F-HR</a></td><td>Plain-text 13F-HR ×2, FRED</td><td class="num">9</td></tr>
+      <tr><td class="num">06</td><td><a href="#t6">Renaissance Technologies 13F rank walk into a 10-K</a></td><td>13F-HR, 10-K, 13G</td><td class="num">8</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div style="height:22px"></div>
+
+  <!-- ===================== TASK 1 ===================== -->
+  <article class="task" id="t1">
+    <div class="task-head">
+      <div><p class="task-id">TASK 01 · Single-filer, two-quarter comparison</p><h3>BlackRock 13F-HR: 3M position, Q2 vs Q3 2025</h3></div>
+      <span class="pill fail">Model missed Q1 and Q2</span>
+    </div>
+    <div class="chips"><span class="chip">13F-HR XML info table</span><span class="chip">FRED SP500</span><span class="chip">Row-level filtering</span></div>
+    <p class="summary">Compares BlackRock's largest single 3M holding row across two quarters, derives an implied price per share, then pulls the S&amp;P 500 close on the filing date the model has to find for itself.</p>
+    <div class="hard">
+      <h4>Why it's hard</h4>
+      <ul>
+        <li>Asks for the single largest <em>row</em>, not the aggregate position. 3M appears on several rows per filing.</li>
+        <li>The Q3 filing date isn't given. The model has to read it from the EDGAR index page and use it as the FRED lookup key.</li>
+      </ul>
+    </div>
+    <div class="answers">
+      <div class="answer miss"><span>Q1 · Q2 row as % of Q3 row</span><b>98.06%</b><span class="model">model: 99.3%</span></div>
+      <div class="answer miss"><span>Q2 · Implied $/share, Q3 row</span><b>$155.18</b><span class="model">model: correct, then regressed</span></div>
+      <div class="answer"><span>Q3 · S&amp;P 500 close, 2025-11-12</span><b>6850.92</b><span class="model ok">model: correct</span></div>
+    </div>
+    <details>
+      <summary>Prompt, reasoning chain and rubric</summary>
+      <div class="detail-body">
+        <h4>Prompt (condensed)</h4>
+        <div class="prompt">BlackRock, Inc. files quarterly 13F-HR reports. The Q2 2025 report was filed 2025-08-12; the Q3 2025 report (period 2025-09-30) was filed on a date recorded on its EDGAR index page. Consider BlackRock's holdings in 3M Company (CUSIP 88579Y101). (1) What was the share count in the single largest Q2 row as a percentage of the single largest Q3 row? (2) What is the implied value per share from that Q3 row? (3) What was the S&amp;P 500's FRED close on the Q3 filing date?</div>
+        <h4>Reasoning chain</h4>
+        <ol class="chain">
+          <li><span class="kind">LOOKUP</span>Q2 2025 info table, CUSIP 88579Y101, largest row: <span class="num">15,699,531</span> shares.</li>
+          <li><span class="kind">LOOKUP</span>Q3 2025 filing (filed 2025-11-12), largest row: <span class="num">16,010,436</span> shares, <span class="num">$2,484,499,458</span>.</li>
+          <li><span class="kind">CALC</span><span class="num">15,699,531 / 16,010,436 = 98.06%</span></li>
+          <li><span class="kind">CALC</span><span class="num">$2,484,499,458 / 16,010,436 = $155.18</span></li>
+          <li><span class="kind">LOOKUP</span>FRED SP500, 2025-11-12: <span class="num">6850.92</span></li>
+        </ol>
+        <h4>Rubric</h4>
+        <div class="scroll"><table class="rubric">
+          <thead><tr><th>Q</th><th class="num">Expected</th><th>Grader</th><th>Criterion</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td class="num">98.06</td><td>Numeric, ±0.1% relative</td><td>Q2 largest-row shares over Q3 largest-row shares</td></tr>
+            <tr><td>2</td><td class="num">155.18</td><td>Numeric, ±$0.20</td><td>Implied value per share, Q3 largest row</td></tr>
+            <tr><td>3</td><td class="num">6850.92</td><td>Exact match</td><td>FRED S&amp;P 500 close on the Q3 filing date</td></tr>
+          </tbody>
+        </table></div>
+        <h4>Model review</h4>
+        <p>First attempt guessed 100% for Q1, which suggests it never located the row-level data. After review it answered 99.3%, still wrong. Q2 was correct on the first run and wrong on the second, which points to an unstable retrieval path rather than a math error.</p>
+      </div>
+    </details>
+  </article>
+
+  <!-- ===================== TASK 2 ===================== -->
+  <article class="task" id="t2">
+    <div class="task-head">
+      <div><p class="task-id">TASK 02 · Derived-period financial analysis</p><h3>AMD derived Q4 2024 free cash flow</h3></div>
+      <span class="pill pass">Model passed</span>
+    </div>
+    <div class="chips"><span class="chip">10-Q cash flow</span><span class="chip">10-K cash flow</span><span class="chip">FRED DGS10</span><span class="chip">Narrative extraction</span></div>
+    <p class="summary">Q4 cash flow isn't reported, so the model has to back it out of the annual 10-K minus the nine-month 10-Q, compare it to the Q1–Q3 average, and pair both filing dates with Treasury yields.</p>
+    <div class="hard">
+      <h4>Why it's hard</h4>
+      <ul>
+        <li>Requires deriving an unreported period from year-to-date figures.</li>
+        <li>Explicitly excludes non-cash capex and accrued property additions, which sit near the right line items.</li>
+        <li>Q4 needs a number from the Part II, Item 2 narrative, not a table.</li>
+      </ul>
+    </div>
+    <div class="answers">
+      <div class="answer"><span>Q1 · Derived Q4 FCF</span><b>$1,091.00M</b><span class="model ok">model: correct</span></div>
+      <div class="answer"><span>Q2 · Q4 vs Q1–Q3 avg</span><b>+149.09%</b><span class="model ok">model: correct</span></div>
+      <div class="answer"><span>Q3 · DGS10 change</span><b>0.14 pp</b><span class="model ok">model: correct</span></div>
+      <div class="answer"><span>Q4 · Withheld stock value</span><b>$465.54M</b><span class="model ok">model: correct</span></div>
+    </div>
+    <details>
+      <summary>Reasoning chain</summary>
+      <div class="detail-body">
+        <ol class="chain">
+          <li><span class="kind">LOOKUP</span>10-Q (period 2024-09-28) filed 2024-10-30 → DGS10 <span class="num">4.29</span></li>
+          <li><span class="kind">LOOKUP</span>10-K (period 2024-12-28) filed 2025-02-05 → DGS10 <span class="num">4.43</span></li>
+          <li><span class="kind">LOOKUP</span>9M operating cash <span class="num">$1,742M</span>, PP&amp;E purchases <span class="num">$428M</span></li>
+          <li><span class="kind">LOOKUP</span>FY operating cash <span class="num">$3,041M</span>, PP&amp;E purchases <span class="num">$636M</span></li>
+          <li><span class="kind">LOOKUP</span>Part II Item 2: ~3.2M shares withheld at avg <span class="num">$145.48</span></li>
+          <li><span class="kind">CALC</span>9M FCF <span class="num">1,314</span>; Q1–Q3 avg <span class="num">438.00</span></li>
+          <li><span class="kind">CALC</span>FY FCF <span class="num">2,405</span>; derived Q4 <span class="num">2,405 − 1,314 = 1,091.00</span></li>
+          <li><span class="kind">CALC</span><span class="num">(1,091 − 438) / 438 = 149.09%</span></li>
+          <li><span class="kind">CALC</span><span class="num">4.43 − 4.29 = 0.14</span> percentage points</li>
+          <li><span class="kind">CALC</span><span class="num">3.2M × $145.48 = $465.54M</span></li>
+        </ol>
+        <p class="note">Kept in the portfolio as a calibration task: it shows where current models are already reliable.</p>
+      </div>
+    </details>
+  </article>
+
+  <!-- ===================== TASK 3 ===================== -->
+  <article class="task" id="t3">
+    <div class="task-head">
+      <div><p class="task-id">TASK 03 · Entity resolution across a merger</p><h3>State Street and Chase Manhattan cross-holdings, 1999</h3></div>
+      <span class="pill fail">Model missed both answers</span>
+    </div>
+    <div class="chips"><span class="chip">Plain-text 13F-HR</span><span class="chip">Fixed-width parsing</span><span class="chip">Investment discretion</span><span class="chip">Pre-merger names</span></div>
+    <p class="summary">Find State Street's earliest two plain-text 13F filings, value its stake in the company that became JPMorgan Chase, then go to that company's own 1999 filing (under its old name) and price its sole-discretion stake in State Street.</p>
+    <div class="hard">
+      <h4>Why it's hard</h4>
+      <ul>
+        <li>The prompt never names Chase Manhattan. The model has to resolve which pre-2000 registrant's CIK became JPMorgan Chase &amp; Co.</li>
+        <li>1999 filings are fixed-width text with continuation rows and page headers, not XML.</li>
+        <li>Only the 4 of 7 rows flagged sole discretion count.</li>
+      </ul>
+    </div>
+    <div class="answers">
+      <div class="answer miss"><span>Q1 · Sole-discretion $/share</span><b>$85.37</b><span class="model">model: 85.38 / 85.31</span></div>
+      <div class="answer miss"><span>Q2 · Difference in $/share</span><b>$1.13</b><span class="model">model: 1.25 / 1.19</span></div>
+    </div>
+    <details>
+      <summary>Reasoning chain, graph and rubric</summary>
+      <div class="detail-body">
+        <h4>Reasoning chain (condensed)</h4>
+        <ol class="chain">
+          <li><span class="kind">LOOKUP</span>State Street (CIK 93751) earliest plain-text 13F-HRs: period 1999-03-31 filed 1999-05-25; period 1999-06-30 filed 1999-08-06.</li>
+          <li><span class="kind">LOOKUP</span>Chase Manhattan Corp (CUSIP 16161A10) in each: <span class="num">$1,001,189,093 / 12,303,399</span> and <span class="num">$1,156,782,492 / 13,373,208</span>.</li>
+          <li><span class="kind">COMPARE</span>Later filing is larger, so use Q2 1999.</li>
+          <li><span class="kind">RESOLVE</span>CIK 19617 filed as "CHASE MANHATTAN CORP /DE/" through 2000, then "JPMORGAN CHASE &amp; CO".</li>
+          <li><span class="kind">LOOKUP</span>Chase Q2 1999 13F-HR, filed 1999-08-11. State Street (CUSIP 85747710) spans 7 rows.</li>
+          <li><span class="kind">CALC</span>Sole rows (4): <span class="num">$21,375,000 / 250,367</span> shares. Shared rows reconcile to the filing's aggregate <span class="num">$25,065,000 / 293,582</span>.</li>
+          <li><span class="kind">CALC</span><span class="num">21,375,000 / 250,367 = $85.37</span> (Answer 1)</li>
+          <li><span class="kind">CALC</span><span class="num">1,156,782,492 / 13,373,208 = $86.50</span>; <span class="num">86.50 − 85.37 = $1.13</span> (Answer 2)</li>
+        </ol>
+        <h4>Reasoning graph</h4>
+<div class="graph">N1  Retrieval  State Street earliest plain-text 13F     → 1999-03-31, filed 1999-05-25
+N2  Retrieval  State Street next consecutive 13F        → 1999-06-30, filed 1999-08-06
+N3  Retrieval  N1: position in Chase (16161A10)         → $1,001,189,093 / 12,303,399
+N4  Retrieval  N2: position in Chase (16161A10)         → $1,156,782,492 / 13,373,208
+N5  Compute    larger of N3, N4                         → N4 (later filing)
+N6  Retrieval  filer records, CIK 0000019617            → Chase Manhattan = JPMorgan Chase
+N7  Retrieval  Chase 13F, same quarter as N5            → 1999-06-30, filed 1999-08-11
+N8  Retrieval  N7: State Street rows (85747710)         → 7 rows, 4 sole, 3 shared
+N9  Compute    sum sole rows                            → $21,375,000 / 250,367
+N10 Compute    N9 value / N9 shares                     → 85.37   ANSWER 1
+N11 Compute    N4 value / N4 shares                     → 86.50
+N12 Compute    N11 − N10                                → 1.13    ANSWER 2
+
+Edges  N1→N3  N2→N4  N3→N5  N4→N5  N5→N7  N6→N7  N7→N8  N8→N9  N9→N10  N4→N11  N10→N12  N11→N12</div>
+        <h4>Rubric weighting</h4>
+        <p>2 final rows at 25.00 points each; 10 intermediate rows (one per non-leaf node) at 5.00 points each. Total 100.</p>
+        <h4>Model review</h4>
+        <p>Across two runs, the model got nearly every factual anchor wrong, including all three filing dates. Its 85.38 on Q1 looks like a rounding miss, but it came from the wrong inputs (509.1M / 5.963M), which happen to give a similar ratio. The rubric's intermediate rows are what catch this.</p>
+      </div>
+    </details>
+  </article>
+
+  <!-- ===================== TASK 4 ===================== -->
+  <article class="task" id="t4">
+    <div class="task-head">
+      <div><p class="task-id">TASK 04 · Affiliated-registrant walk</p><h3>Citadel Securities FOCUS report and Citadel Advisors 13F</h3></div>
+    </div>
+    <div class="chips"><span class="chip">X-17A-5 Part III</span><span class="chip">13F-HR, 17,346 rows</span><span class="chip">Schedule 13G/A</span><span class="chip">Positional walk</span></div>
+    <p class="summary">Links a broker-dealer's balance sheet to its affiliated investment manager's 13F, then uses the computed percentage to walk forward through a 17,346-row information table.</p>
+    <div class="hard">
+      <h4>Why it's hard</h4>
+      <ul>
+        <li>The affiliate isn't named. A 13G/A listing both entities as joint reporting persons is the link.</li>
+        <li>The largest issuer (SPY) spans 4 rows mixing calls, puts and a long position. All 4 must be summed.</li>
+        <li>An error in Q1 sends the row walk in Q2 to the wrong CUSIP.</li>
+      </ul>
+    </div>
+    <div class="answers">
+      <div class="answer"><span>Q1 · Total assets / 13F total</span><b>10.14%</b></div>
+      <div class="answer"><span>Q2 · Value 10 rows forward</span><b>$328,806</b></div>
+    </div>
+    <details>
+      <summary>Reasoning chain and full rubric</summary>
+      <div class="detail-body">
+        <h4>Reasoning chain (condensed)</h4>
+        <ol class="chain">
+          <li><span class="kind">LOOKUP</span>Citadel Securities LLC FY2024 X-17A-5 (original, filed 2025-02-28): total assets <span class="num">$58,608M</span>.</li>
+          <li><span class="kind">RESOLVE</span>UWM Holdings 13G/A lists Citadel Advisors LLC and Citadel Securities LLC as joint reporting persons → Citadel Advisors (CIK 1423053).</li>
+          <li><span class="kind">LOOKUP</span>Citadel Advisors 13F-HR, period 2024-12-31, filed 2025-02-14.</li>
+          <li><span class="kind">AGG</span>Largest issuer: SPDR S&amp;P 500 ETF TR (78462F103), rows 14,248–14,251, sum <span class="num">$68,639,297,221</span>.</li>
+          <li><span class="kind">AGG</span>All 17,346 rows sum to <span class="num">$577,866,148,707</span>, matching the Summary Page total exactly.</li>
+          <li><span class="kind">CALC</span><span class="num">58,608,000,000 / 577,866,148,707 = 10.14%</span> (Answer 1)</li>
+          <li><span class="kind">WALK</span>Whole number 10 → row 14,248 + 10 = row 14,258: SPDR SER TR, CUSIP 78464A151, one row, <span class="num">$328,806</span> (Answer 2)</li>
+        </ol>
+        <h4>Rubric</h4>
+        <div class="scroll"><table class="rubric">
+          <thead><tr><th>Step</th><th>Expected</th><th>Grader</th><th class="num">Weight</th></tr></thead>
+          <tbody>
+            <tr class="final"><td>Q1</td><td class="num">10.14%</td><td>Numeric ±0.01 abs</td><td class="num">25.00</td></tr>
+            <tr class="final"><td>Q2</td><td class="num">328,806</td><td>Numeric ±0.01% rel</td><td class="num">25.00</td></tr>
+            <tr><td>S2</td><td class="num">58,608,000,000</td><td>Numeric ±0.01% rel</td><td class="num">5.00</td></tr>
+            <tr><td>S3</td><td>Citadel Advisors LLC</td><td>Exact match</td><td class="num">5.00</td></tr>
+            <tr><td>S5a</td><td>SPDR S&amp;P 500 ETF TR</td><td>Exact match</td><td class="num">5.00</td></tr>
+            <tr><td>S5b</td><td class="num">78462F103</td><td>Exact match</td><td class="num">5.00</td></tr>
+            <tr><td>S5c</td><td class="num">68,639,297,221</td><td>Numeric ±0.01% rel</td><td class="num">5.00</td></tr>
+            <tr><td>S6</td><td class="num">14,248</td><td>Numeric</td><td class="num">5.00</td></tr>
+            <tr><td>S7</td><td class="num">577,866,148,707</td><td>Numeric ±0.01% rel</td><td class="num">5.00</td></tr>
+            <tr><td>S9</td><td class="num">10</td><td>Numeric</td><td class="num">5.00</td></tr>
+            <tr><td>S10</td><td class="num">14,258</td><td>Numeric</td><td class="num">5.00</td></tr>
+            <tr><td>S11</td><td class="num">78464A151</td><td>Exact match</td><td class="num">5.00</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </details>
+  </article>
+
+  <!-- ===================== TASK 5 ===================== -->
+  <article class="task" id="t5">
+    <div class="task-head">
+      <div><p class="task-id">TASK 05 · Legacy-format retrieval, revised after review</p><h3>JPMorgan Chase's earliest plain-text 13F-HR</h3></div>
+      <span class="pill fail">Model missed Q2</span>
+    </div>
+    <div class="chips"><span class="chip">Plain-text 13F-HR</span><span class="chip">VALUE in $000s</span><span class="chip">FRED fallback chain</span><span class="chip">Task revision</span></div>
+    <p class="summary">Find JPMorgan's first two 13F-HRs on EDGAR (filed under the Chase Manhattan name in 1999), aggregate the largest issuer across 10 rows, and compare implied prices between quarters.</p>
+    <div class="hard">
+      <h4>Why it's hard</h4>
+      <ul>
+        <li>The VALUE column is in thousands. The header has a decoy parenthesized token, "(SHARES)", one line above the real unit, "(000'S)".</li>
+        <li>Version 1 asked for the S&amp;P 500 on 1999-08-11. FRED's SP500 and DJIA don't reach that date, so the prompt specified a fallback to DGS10.</li>
+        <li>The model couldn't locate the plain-text filings in v1, so I revised the task to test aggregation and percentages directly.</li>
+      </ul>
+    </div>
+    <div class="answers">
+      <div class="answer"><span>Q1 · Larger implied $/share</span><b>$113.00</b><span class="model ok">model: correct</span></div>
+      <div class="answer miss"><span>Q2 · GE share of table total</span><b>4.84%</b><span class="model">model: 4.79%</span></div>
+    </div>
+    <details>
+      <summary>Reasoning chain (revised version)</summary>
+      <div class="detail-body">
+        <ol class="chain">
+          <li><span class="kind">LOOKUP</span>CIK 19617: period 1999-03-31 filed 1999-05-12; period 1999-06-30 filed 1999-08-11.</li>
+          <li><span class="kind">AGG</span>Later filing, largest issuer: General Electric Co (36960410), <span class="num">$2,122,712,000 / 18,785,053</span> shares, 10 rows.</li>
+          <li><span class="kind">AGG</span>Earlier filing, same issuer: <span class="num">$2,243,268,000 / 20,278,133</span> shares, 9 rows.</li>
+          <li><span class="kind">CALC</span>Later <span class="num">$113.00</span>, earlier <span class="num">$110.62</span>. Larger is <span class="num">$113.00</span> (Answer 1)</li>
+          <li><span class="kind">AGG</span>Later filing table total: <span class="num">$43,877,303,000</span> across 5,872 parsed rows.</li>
+          <li><span class="kind">CALC</span><span class="num">2,122,712,000 / 43,877,303,000 = 4.84%</span> (Answer 2)</li>
+        </ol>
+        <h4>Rubric weighting (v1)</h4>
+        <p>24 intermediate rows sharing 50 points: the first 8 at 2.09 and the remaining 16 at 2.08, totaling exactly 50.00. 2 final rows at 25.00.</p>
+      </div>
+    </details>
+  </article>
+
+  <!-- ===================== TASK 6 ===================== -->
+  <article class="task" id="t6">
+    <div class="task-head">
+      <div><p class="task-id">TASK 06 · Computed-rank walk across filers</p><h3>Renaissance Technologies 13F rank walk into a 10-K</h3></div>
+    </div>
+    <div class="chips"><span class="chip">13F-HR, 3,533 rows</span><span class="chip">Distinct-count logic</span><span class="chip">10-K revenue</span><span class="chip">CUSIP ↔ CIK check</span></div>
+    <p class="summary">Counts distinct CUSIPs vs distinct issuer names in Renaissance's Q4 2024 13F, uses the difference as a rank, then ties the issuer at that rank to its own 10-K revenue.</p>
+    <div class="hard">
+      <h4>Why it's hard</h4>
+      <ul>
+        <li>Issuer-name strings and CUSIPs don't map one to one. The gap between them (334) becomes the rank.</li>
+        <li>The model has to confirm the 13F's CUSIP and the 10-K filer's CIK are the same company, using a 13G address match.</li>
+      </ul>
+    </div>
+    <div class="answers">
+      <div class="answer"><span>Q1 · CUSIPs − issuers</span><b>334</b></div>
+      <div class="answer"><span>Q2 · 13F value / 10-K revenue</span><b>6.29%</b></div>
+    </div>
+    <details>
+      <summary>Reasoning chain and rubric</summary>
+      <div class="detail-body">
+        <ol class="chain">
+          <li><span class="kind">LOOKUP</span>Renaissance (CIK 1037389) 13F-HR, period 2024-12-31, filed 2025-02-13.</li>
+          <li><span class="kind">COUNT</span>3,199 distinct issuer names; 3,533 distinct CUSIPs → <span class="num">334</span> (Answer 1)</li>
+          <li><span class="kind">RANK</span>Rank 334 by aggregate value: Warby Parker Inc. (93403J106), <span class="num">$48,478,104</span>, 1 row.</li>
+          <li><span class="kind">LOOKUP</span>Warby Parker FY2024 10-K: total net revenue <span class="num">$771.3M</span>.</li>
+          <li><span class="kind">VERIFY</span>Schedule 13G address matches the 10-K cover page, linking CUSIP 93403J106 to CIK 1504776.</li>
+          <li><span class="kind">CALC</span><span class="num">48,478,104 / 771,300,000 = 6.29%</span> (Answer 2)</li>
+        </ol>
+        <div class="scroll"><table class="rubric">
+          <thead><tr><th>Step</th><th>Expected</th><th>Grader</th><th class="num">Weight</th></tr></thead>
+          <tbody>
+            <tr class="final"><td>Q1</td><td class="num">334</td><td>Numeric ±0.01% rel</td><td class="num">25.00</td></tr>
+            <tr class="final"><td>Q2</td><td class="num">6.29%</td><td>Numeric ±0.01 abs</td><td class="num">25.00</td></tr>
+            <tr><td>S1</td><td class="num">2025-02-13</td><td>Date match</td><td class="num">5.56</td></tr>
+            <tr><td>S2</td><td class="num">3,199</td><td>Numeric</td><td class="num">5.56</td></tr>
+            <tr><td>S3</td><td class="num">3,533</td><td>Numeric</td><td class="num">5.56</td></tr>
+            <tr><td>S4</td><td>Warby Parker Inc.</td><td>Exact match</td><td class="num">5.56</td></tr>
+            <tr><td>S5</td><td class="num">93403J106</td><td>Exact match</td><td class="num">5.56</td></tr>
+            <tr><td>S6</td><td class="num">48,478,104</td><td>Numeric</td><td class="num">5.55</td></tr>
+            <tr><td>S7</td><td>Warby Parker Inc.</td><td>Exact match</td><td class="num">5.55</td></tr>
+            <tr><td>S8</td><td class="num">771,300,000</td><td>Numeric</td><td class="num">5.55</td></tr>
+            <tr><td>S9</td><td>13G filed date</td><td>Date match</td><td class="num">5.55</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </details>
+  </article>
+</section>
+
+<section id="analytical">
+  <div class="sec-head">
+    <h2>Analytical task design</h2>
+    <p class="read">Open-ended tasks with several deliverables and a decision rule, built around a real operational question rather than a single numeric answer.</p>
+  </div>
+  <article class="task" id="t7">
+    <div class="task-head">
+      <div><p class="task-id">TASK 07 · End-to-end analytics, in development</p><h3>When to switch from a generic to a sequence-specific aftershock forecast</h3></div>
+      <span class="pill wip">In development</span>
+    </div>
+    <div class="chips"><span class="chip">Reasenberg–Jones model</span><span class="chip">Page et al. (2016)</span><span class="chip">Poisson log-likelihood</span><span class="chip">Backtest, 10 sequences</span><span class="chip">CSV + memo + script</span></div>
+    <p class="summary">A regional hazard office is launching a 90-day aftershock advisory program. After a large quake it issues the published generic forecast, then switches to a forecast re-fitted on that sequence's own aftershocks. The task: backtest switching on day 1, 2, 3 or 7 across ten 2018–2020 sequences and recommend when to switch.</p>
+    <div class="hard">
+      <h4>Why it's hard</h4>
+      <ul>
+        <li>The model has to build the aftershock windows itself: 1.5× the Wells–Coppersmith rupture length (minimum 50 km), within 70 km of mainshock depth, M4.5+, cut short if another M7+ lands inside the window.</li>
+        <li>Each forecast may use only data available on the switch day, so leaking later aftershocks into the fit is an easy mistake.</li>
+        <li>The decision rule is strict: pick the earliest day where the sequence-specific forecast beats the generic one in at least 8 of 10 sequences, otherwise stay generic for all 90 days.</li>
+        <li>Three deliverables have to agree: a 40-row CSV, a one-chart PDF memo for a program lead, and a script that reproduces the CSV and prints the recommendation.</li>
+      </ul>
+    </div>
+    <div class="answers">
+      <div class="answer"><span>Expected recommendation</span><b>Day 3</b><span class="model ok">possibly day 2</span></div>
+      <div class="answer"><span>Generic-forecast spread</span><b>227 vs 45</b><span class="model ok">Tari vs Palu, both M7.5</span></div>
+    </div>
+    <details>
+      <summary>Prompt and reasoned answer</summary>
+      <div class="detail-body">
+        <h4>Prompt (condensed)</h4>
+        <div class="prompt">When a large shallow earthquake strikes, we will immediately issue the published generic forecast for its tectonic region, using the Page et al. (2016) parameters. As aftershocks are recorded, we can replace it with a sequence-specific forecast: the same Reasenberg–Jones model with productivity and decay re-estimated from that sequence. Backtest switch days 1, 2, 3 and 7 on Kodiak (Jan 2018), Tari (Feb 2018), Palu (Sep 2018), Zakynthos (Oct 2018), Loyalty Islands (Dec 2018), Kamchatka (Dec 2018), Kermadec (Jun 2019), Molucca Sea (Nov 2019), Kermadec (Jun 2020) and Sand Point (Oct 2020). Score each forecast of switch-day-to-day-90 counts by Poisson log-likelihood, and recommend the earliest day where the sequence-specific forecast wins in at least 8 of 10 sequences. Deliver a CSV, a short PDF memo with one decision chart, and the reproducing Python script.</div>
+        <h4>The model being tested</h4>
+        <p>Expected rate of aftershocks of magnitude M or above at time t is <span class="num">10^(a + b(Mmain − M)) × (t + c)^−p</span>. The generic forecast uses fixed regional averages for a, b, p and c, so it gives every quake of the same size in the same region the same forecast.</p>
+        <h4>Reasoned answer: day 3, possibly day 2</h4>
+        <ul>
+          <li><b>Why not day 1.</b> One day of data (10–76 aftershocks per sequence) shows productivity but very little about decay. Several sequences would mislead a day-1 fit, which likely means 2–3 failures out of 10 and a miss on the 8-of-10 bar.</li>
+          <li><b>Kermadec 2019 starts slow:</b> 19 aftershocks on day 1, 21 more over days 2–3, 34 over days 4–7. A day-1 fit assumes fast decay and under-predicts.</li>
+          <li><b>Palu burns out fast:</b> 29 on day 1, then 4, 5, 6 and 1 in later periods. A day-1 fit with typical decay over-predicts.</li>
+          <li><b>Kodiak flares up late:</b> 12 aftershocks in days 38–90, more than days 8–37 had.</li>
+          <li><b>Early undercount:</b> day-1 catalogs miss events in the first hours after the mainshock.</li>
+          <li><b>Why day 3 passes.</b> The decay shape starts to show, and the re-fit fixes the generic forecast's biggest error, the productivity level, in most sequences.</li>
+          <li><b>Why not day 7.</b> It probably passes too, but the rule picks the earliest passing day, and by day 7 most aftershocks have already happened.</li>
+        </ul>
+        <p class="note">Status: prompt and expected answer drafted; the backtest script and rubric are in progress.</p>
+      </div>
+    </details>
+  </article>
+</section>
+
+<section id="toolkit">
+  <div class="sec-head">
+    <h2>Parsing toolkit</h2>
+    <p class="read">I build a parser for every source format before writing an answer key. Each one reconciles its output against the filing's own totals and flags rows it can't trust.</p>
+  </div>
+  <div class="tools">
+    <div class="tool">
+      <h3>parse_13f_html.py</h3>
+      <p>Full toolkit for modern XML-rendered 13F information tables: row lookup by position, CUSIP and issuer aggregation, top/bottom-N ranking, put/call and discretion breakdowns, cross-filing comparison.</p>
+      <p class="decision">Finds the real header row by its "NAME OF ISSUER" label and skips the decorative "COLUMN 1…" rows above it. Warns that row values are in dollars while the Summary Page total is in $000s.</p>
+      <p class="used">Used in tasks 01, 04, 06</p>
+    </div>
+    <div class="tool">
+      <h3>parse_13f_text_chase.py</h3>
+      <p>Regex parser for pre-2013 fixed-width plain-text 13F tables, handling first rows and the "0"-prefixed continuation rows that carry a holding across lines.</p>
+      <p class="decision">Reports lines that look like data but match neither pattern, so possible undercounts are visible instead of silent.</p>
+      <p class="used">Used in tasks 03, 05</p>
+    </div>
+    <div class="tool">
+      <h3>analyze_13f_text_chase.py</h3>
+      <p>Two-filing analyzer: assigns every data row a physical row index, finds the smallest row per CUSIP, and computes the ratio and implied-price answers.</p>
+      <p class="decision">Reads the VALUE unit from the header by matching only the parenthesized token directly before "AMOUNT", which avoids the "(SHARES)" decoy on the line above.</p>
+      <p class="used">Used in task 05</p>
+    </div>
+    <div class="tool">
+      <h3>parse_13f_text_statestreet.py</h3>
+      <p>Parser for State Street's 1999 fixed-width tables with two three-way splits per row: investment discretion and voting authority.</p>
+      <p class="decision">Re-reads column positions from each page's own header instead of hardcoding them, since an $8.7B row formats wider than a $1 row. Every row is sum-checked, and genuine source-filing errors (a BellSouth row off by 20,198 shares) are flagged rather than "fixed".</p>
+      <p class="used">Used in task 03</p>
+    </div>
+    <div class="tool">
+      <h3>npx_pipeline.py</h3>
+      <p>Bridgewater Form N-PX proxy-vote pipeline: labels every row and every split FOR/AGAINST sub-outcome, aggregates by issuer, and walks forward through FRED DGS10 by a computed digit.</p>
+      <p class="decision">Reports both counting definitions (per table row and per vote outcome) so the rubric can lock one in explicitly.</p>
+      <p class="used">N-PX task, write-up in progress</p>
+    </div>
+    <div class="tool">
+      <h3>npx_final.py · npx_independent_walk.py</h3>
+      <p>Two competing interpretations of the same N-PX digit-walk prompt, built to test whether the prompt is ambiguous before it ships.</p>
+      <p class="decision">Found that one zero-share row with no recorded vote (Masimo) changes the total from 892 to 891 and moves the landing row. The final version counts it as zero entries.</p>
+      <p class="used">N-PX task, write-up in progress</p>
+    </div>
+    <div class="tool">
+      <h3>compare.py</h3>
+      <p>Token-level diff between two versions of a prompt or answer, printed with context and saved as a highlighted HTML report.</p>
+      <p class="decision">Tokenizes on words, whitespace and single punctuation marks, so a changed digit or comma inside a number shows as its own edit.</p>
+      <p class="used">Used for prompt revisions</p>
+    </div>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="sec-head"><h2>Skills</h2></div>
+  <div class="skills">
+    <div><h3>LLM evaluation</h3><p>Multi-hop task design, golden trajectories, reasoning graphs, weighted rubrics, model output review, RL-environment training data</p></div>
+    <div><h3>Data engineering</h3><p>Python (BeautifulSoup, regex, difflib), SQL, REST API integrations, fixed-width and HTML parsing, reconciliation checks</p></div>
+    <div><h3>Financial data</h3><p>SEC EDGAR (13F-HR, 10-K, 10-Q, X-17A-5, N-PX, 13G), FRED, master data (SAP MDM), IT finance (Apptio TBM)</p></div>
+    <div><h3>Data governance</h3><p>PII/BII data and metadata, code-output auditing, master data cleansing and mapping across 300+ companies</p></div>
+  </div>
+</section>
+
+</main>
+
+<footer id="contact">
+  <div class="wrap">
+    <h2>Contact</h2>
+    <p>Email: <span class="mono">pmadathiparampil@gmail.com</span> · <a href="https://www.linkedin.com/in/paul-m-48a9b1269/">LinkedIn</a> · <a href="https://github.com/pmadathiparampil">GitHub</a></p>
+    <p class="note">All tasks on this page are built from public SEC EDGAR filings and FRED data. Figures are as published in the source documents cited in each reasoning chain.</p>
+  </div>
+</footer>
+
+</body>
+</html>
